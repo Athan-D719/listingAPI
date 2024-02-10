@@ -1,20 +1,21 @@
 /********************************************************************************
-*  WEB422 – Assignment 1
+*  WEB422 – Assignment 2
 * 
 *  I declare that this assignment is my own work in accordance with Seneca's
 *  Academic Integrity Policy:
 * 
 *  https://www.senecapolytechnic.ca/about/policies/academic-integrity-policy.html
 * 
-*  Name: Jonathan Diaz Ospina Student ID: 122798226 Date: 2024-01-31
+*  Name: Jonathan Diaz Ospina Student ID: 122798226 Date: 2024-02-09
 *
-*  Published URL: ___________________________________________________________
+*  Published URL: https://wide-eyed-jersey-bat.cyclic.app
 *
 ********************************************************************************/
 
 
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 const dotenv = require("dotenv")
 const ListingsDB = require("./modules/listingsDB.js");
 
@@ -25,7 +26,8 @@ const HTTP_PORT = process.env.PORT || 3000;
 const db = new ListingsDB();
 
 app.use(cors());
-app.use(express.json());
+
+app.use(express.static(path.join(__dirname)));
 
 
 db.initialize(process.env.MONGODB_CONN_STRING).then(()=>{
@@ -39,7 +41,8 @@ db.initialize(process.env.MONGODB_CONN_STRING).then(()=>{
 
 
 app.get("/", (req,res) => {
-  res.json({ message: "API Listening" });
+  // res.json({ message: "API Listening" });
+  res.sendFile(path.join(__dirname, "index.html"));
 });
 
 // POST /api/listings
@@ -63,9 +66,9 @@ app.get('/api/listings', async (req, res) => {
   try {
     page = parseInt(req.query.page);
     perPage = parseInt(req.query.perPage);
-    name = req.query.name || ""
+    names = (req.query.name || "");
 
-    db.getAllListing(page, perPage, name).then((pageListing) =>{
+    db.getAllListings(page, perPage, names).then((pageListing) =>{
       res.status(200).json(pageListing);
     });
 
